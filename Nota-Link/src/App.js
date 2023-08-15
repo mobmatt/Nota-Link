@@ -7,7 +7,7 @@ import Navbar from './components/Navbar';
 import Retrieve from './pages/Retrieve';
 import History from './pages/History';
 import Signup from './pages/Signup';
-import './components/NavbarStyles.css'
+import './styles/NavbarStyles.css'
 
 
 function App() {

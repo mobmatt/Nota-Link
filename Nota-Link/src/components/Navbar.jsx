@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { Link } from 'react-router-dom'; // Import Link
 import { MenuData } from './MenuData';
-import "./NavbarStyles.css";
+import "../styles/NavbarStyles.css";
 
 class Navbar extends Component {
   render() {
