@@ -6,6 +6,7 @@ import Upload from './pages/Upload';
 import Navbar from './components/Navbar';
 import Retrieve from './pages/Retrieve';
 import History from './pages/History';
+import Signup from './pages/Signup';
 import './components/NavbarStyles.css'
 
 
@@ -21,6 +22,7 @@ function App() {
           <Route path="/upload" element={<Upload />} />
           <Route path="/retrieve" element={<Retrieve />} />
           <Route path="/history" element={<History />} />
+          <Route path="/signup" element={<Signup />} />
         </Routes>
         </div>
        

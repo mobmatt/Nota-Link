@@ -24,9 +24,9 @@ export const MenuData = [
       icon: "fa-solid fa-book",
     },
     {
-      title: "Sign Up",
-      url: "#", // You might need to update this based on its functionality
-      cName: "nav-links-mobile",
+      title: "Signup",
+      url: "/signup", // You might need to update this based on its functionality
+      cName: "nav-links",
     },
   ];
   

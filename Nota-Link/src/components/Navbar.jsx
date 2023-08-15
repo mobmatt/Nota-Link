@@ -8,7 +8,10 @@ class Navbar extends Component {
     return (
       <nav className="NavbarItems">
         <h1 className="logo">
+          <Link href="/">
           NotaLink <i className="fab fa-react"></i>
+          </Link>
+         
         </h1>
         <ul className="nav-menu">
           {MenuData.map((item, index) => {
