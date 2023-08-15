@@ -11,12 +11,7 @@ export const MenuData = [
       cName: "nav-links",
       icon: "fa-solid fa-upload",
     },
-    {
-      title: "Retrive",
-      url: "/retrieve", // Set the URL to the retrieve route
-      cName: "nav-links",
-      icon: "fa-solid fa-rotate",
-    },
+   
     {
       title: "History",
       url: "/history", // Set the URL to the history route

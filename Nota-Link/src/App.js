@@ -4,7 +4,7 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Home from './pages/Home';
 import Upload from './pages/Upload';
 import Navbar from './components/Navbar';
-import Retrieve from './pages/Retrieve';
+
 import History from './pages/History';
 import Signup from './pages/signup';
 import Web3Modal from "web3modal";
@@ -40,7 +40,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/upload" element={<Upload connectWallet={connectWallet}/>} />
-          <Route path="/retrieve" element={<Retrieve />} />
+          
           <Route path="/history" element={<History />} />
           <Route path="/signup" element={<Signup />} />
         </Routes>
