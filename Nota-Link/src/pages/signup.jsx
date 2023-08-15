@@ -1,3 +1,5 @@
+import "../styles/Signup.css"
+
 export default function Signup() {
     return(
         <div className="signup-container">
@@ -11,7 +13,7 @@ export default function Signup() {
             <label htmlFor="password">Password:</label>
             <input type="password" id="password" name="password" required />
           </div>
-          <button type="submit">Sign Up</button>
+          <button className="signupButton" type="submit">Sign Up</button>
         </form>
       </div>
     )

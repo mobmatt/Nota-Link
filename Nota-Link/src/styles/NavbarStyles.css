@@ -12,9 +12,6 @@
     z-index: 100; /* Ensure the navbar is above other content */
   }
 
-  .content-container {
-    margin-top: 80px; /* Adjust as needed to provide space for the fixed navbar */
-  }
   
   .logo {
     color: white;

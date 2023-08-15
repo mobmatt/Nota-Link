@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { useToast } from '@chakra-ui/react';
+import "../styles/Upload.css";
 
-const Upload = () => {
+const Upload = ({connectWallet}) => {
   const [selectedFiles, setSelectedFiles] = useState([]);
   const toast = useToast();
 
@@ -33,24 +34,33 @@ const Upload = () => {
   };
 
   return (
-    <div>
+    <div className="upload-container">
       <input
+        className="file-input"
         type="file"
         multiple
         onChange={handleFileChange}
       />
       <div
+        className="drop-area"
         onDrop={handleDrop}
         onDragOver={handleDragOver}
-        style={{ border: '1px dashed #ccc', padding: '1rem', margin: '1rem 0' }}
       >
         Drag and drop files here
       </div>
-      <button onClick={handleUpload}>Upload</button>
-      <div>
+      <button className="upload-button" onClick={handleUpload}>
+        Upload
+      </button>
+      <div className="selected-files">
         {selectedFiles.map((file, index) => (
           <div key={index}>{file.name}</div>
         ))}
+      </div>
+      <div className="connect-wallet-container">
+        <h1>Connect Wallet</h1>
+        <button className="connect-wallet-button" onClick={connectWallet}>
+          Connect Wallet
+        </button>
       </div>
     </div>
   );
