@@ -2,8 +2,9 @@ import React, { useState } from 'react';
 import { useToast } from '@chakra-ui/react';
 import "../styles/Upload.css";
 
-const Upload = ({connectWallet}) => {
+const Upload = ({ connectWallet }) => {
   const [selectedFiles, setSelectedFiles] = useState([]);
+  const [connectedWalletAddress, setConnectedWalletAddress] = useState(null); // New state variable
   const toast = useToast();
 
   const handleFileChange = (e) => {
@@ -33,6 +34,16 @@ const Upload = ({connectWallet}) => {
     setSelectedFiles([]);
   };
 
+  const handleWalletConnect = async () => {
+    try {
+      // Call the connectWallet function and store the wallet address
+      const walletAddress = await connectWallet();
+      setConnectedWalletAddress(walletAddress);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <div className="upload-container">
       <input
@@ -58,9 +69,13 @@ const Upload = ({connectWallet}) => {
       </div>
       <div className="connect-wallet-container">
         <h1>Connect Wallet</h1>
-        <button className="connect-wallet-button" onClick={connectWallet}>
-          Connect Wallet
-        </button>
+        {connectedWalletAddress ? (
+          <p>Connected Wallet: {connectedWalletAddress}</p>
+        ) : (
+          <button className="connect-wallet-button" onClick={handleWalletConnect}>
+            Connect Wallet
+          </button>
+        )}
       </div>
     </div>
   );

@@ -25,10 +25,10 @@ function App() {
         providerOptions,
       });
       const web3ModalInstance = await web3Modal.connect();
-      const web3ModalProvider = new ethers.providers.web3ModalProvider(web3ModalInstance);
+      const web3ModalProvider = new ethers.providers.Web3Provider(web3ModalInstance);
       console.log(web3ModalProvider);
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
   }
   return (
