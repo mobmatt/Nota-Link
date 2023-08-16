@@ -2,9 +2,8 @@ import React, { useState } from 'react';
 import { useToast, Button, Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, ModalFooter, useDisclosure } from '@chakra-ui/react';
 import '../styles/Upload.css';
 
-const Upload = ({ connectWallet }) => {
+const Upload = ({ Web3Button }) => {
   const [selectedFiles, setSelectedFiles] = useState([]);
-  const [connectedWalletAddress, setConnectedWalletAddress] = useState(null);
   const [isSigning, setIsSigning] = useState(false); // State for showing the "Sign" button
   const toast = useToast();
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -44,14 +43,7 @@ const Upload = ({ connectWallet }) => {
     onClose(); // Close the modal
   };
 
-  const handleWalletConnect = async () => {
-    try {
-      const walletAddress = await connectWallet();
-      setConnectedWalletAddress(walletAddress);
-    } catch (error) {
-      console.log(error);
-    }
-  };
+ 
 
   return (
     <div className="upload-container">
@@ -76,16 +68,10 @@ const Upload = ({ connectWallet }) => {
           <div key={index}>{file.name}</div>
         ))}
       </div>
-      <div className="connect-wallet-container">
-        <h1>Connect Wallet</h1>
-        {connectedWalletAddress ? (
-          <p>Connected Wallet: {connectedWalletAddress}</p>
-        ) : (
-          <button className="connect-wallet-button" onClick={handleWalletConnect}>
-            Connect Wallet
-          </button>
-        )}
+      <div>
+        <Web3Button />
       </div>
+     
 
       {/* Modal */}
       <Modal isOpen={isOpen} onClose={onClose}>
