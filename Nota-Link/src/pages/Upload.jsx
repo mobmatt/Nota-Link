@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { useToast, Button, Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, ModalFooter, useDisclosure } from '@chakra-ui/react';
 import '../styles/Upload.css';
 
@@ -8,6 +8,7 @@ const Upload = ({ connectWallet }) => {
   const [isSigning, setIsSigning] = useState(false); // State for showing the "Sign" button
   const toast = useToast();
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const fileInputRef = useRef(null); 
 
   const handleFileChange = (e) => {
     const files = Array.from(e.target.files);
@@ -44,6 +45,11 @@ const Upload = ({ connectWallet }) => {
     onClose(); // Close the modal
   };
 
+  const handleChooseFile = () => {
+    // Trigger the file input click
+    fileInputRef.current.click();
+  };
+
   const handleWalletConnect = async () => {
     try {
       const walletAddress = await connectWallet();
@@ -56,11 +62,18 @@ const Upload = ({ connectWallet }) => {
   return (
     <div className="upload-container">
       <input
-        className="file-input"
-        type="file"
-        multiple
-        onChange={handleFileChange}
+     className="file-input"
+     ref={fileInputRef} // Assign the ref to the file input
+     type="file"
+     style={{ display: 'none' }}
+     multiple
+     onChange={handleFileChange}
       />
+
+<Button colorScheme='teal' variant='solid'className="choose-file-button" onClick={handleChooseFile}>
+        Choose File
+      </Button>
+      
       <div
         className="drop-area"
         onDrop={handleDrop}
