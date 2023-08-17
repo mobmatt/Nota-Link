@@ -9,7 +9,7 @@ class Navbar extends Component {
       <nav className="NavbarItems">
         <h1 className="logo">
           <Link href="/">
-          NotaLink <i className="fab fa-react"></i>
+          NotaLink 
           </Link>
          
         </h1>

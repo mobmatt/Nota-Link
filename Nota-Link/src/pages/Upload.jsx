@@ -1,10 +1,14 @@
 import React, { useState, useRef } from 'react';
 import { useToast, Button, Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, ModalFooter, useDisclosure } from '@chakra-ui/react';
 import '../styles/Upload.css';
+import axios from 'axios';
 
-const Upload = ({ connectWallet }) => {
+
+
+
+
+const Upload = ({ Web3Button }) => {
   const [selectedFiles, setSelectedFiles] = useState([]);
-  const [connectedWalletAddress, setConnectedWalletAddress] = useState(null);
   const [isSigning, setIsSigning] = useState(false); // State for showing the "Sign" button
   const toast = useToast();
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -27,36 +31,46 @@ const Upload = ({ connectWallet }) => {
   };
 
   const handleUpload = () => {
+    console.log('Modal should open');
     setIsSigning(true); // Show the "Sign" button when files are uploaded
     onOpen(); // Open the modal
   };
 
-  const handleSign = () => {
-    // Handle signing the files and showing a success message
-    setIsSigning(false); // Reset the signing state
-    toast({
-      title: 'Files signed and uploaded',
-      description: `${selectedFiles.length} files signed and uploaded successfully.`,
-      status: 'success',
-      duration: 3000,
-      isClosable: true,
+  const handleSign = async () => {
+    setIsSigning(false);
+  
+    const formData = new FormData();
+    selectedFiles.forEach(file => {
+      formData.append('file', file);
     });
-    setSelectedFiles([]);
-    onClose(); // Close the modal
-  };
-
-  const handleChooseFile = () => {
-    // Trigger the file input click
-    fileInputRef.current.click();
-  };
-
-  const handleWalletConnect = async () => {
     try {
-      const walletAddress = await connectWallet();
-      setConnectedWalletAddress(walletAddress);
+      // Send files to server and get encryption key in response
+      const response = await axios.post('http://localhost:3000/upload', formData);
+
+      const { key: encryptionKey } = response.data;
+  
+      // Handle success message and update state
+      toast({
+        title: 'Files signed and uploaded',
+        description: `${selectedFiles.length} files signed and uploaded successfully.`,
+        status: 'success',
+        duration: 3000,
+        isClosable: true,
+      });
+  
+      // Save the encryption key to MongoDB
+      const saveKeyResponse = await axios.post('/save-key', { key: encryptionKey });
+      console.log('Encryption key saved:', saveKeyResponse.data);
+  
+      setSelectedFiles([]);
+      onClose(); // Close the modal
     } catch (error) {
-      console.log(error);
+      // Handle error
+      console.error('Error signing and uploading files:', error);
     }
+  };
+  const handleChooseFile = () => {
+    fileInputRef.current.click(); // Trigger the click event on the file input element
   };
 
   return (
@@ -90,16 +104,10 @@ const Upload = ({ connectWallet }) => {
           <div key={index}>{file.name}</div>
         ))}
       </div>
-      <div className="connect-wallet-container">
-        <h1>Connect Wallet</h1>
-        {connectedWalletAddress ? (
-          <p>Connected Wallet: {connectedWalletAddress}</p>
-        ) : (
-          <Button colorScheme='teal' variant='solid' className="connect-wallet-button" onClick={handleWalletConnect}>
-            Connect Wallet
-          </Button>
-        )}
+      <div>
+        <Web3Button />
       </div>
+     
 
       {/* Modal */}
       <Modal isOpen={isOpen} onClose={onClose}>
