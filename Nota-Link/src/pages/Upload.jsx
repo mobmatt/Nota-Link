@@ -70,10 +70,7 @@ const Upload = ({ connectWallet }) => {
      onChange={handleFileChange}
       />
 
-<Button colorScheme='teal' variant='solid'className="choose-file-button" onClick={handleChooseFile}>
-        Choose File
-      </Button>
-      
+
       <div
         className="drop-area"
         onDrop={handleDrop}
@@ -81,9 +78,13 @@ const Upload = ({ connectWallet }) => {
       >
         Drag and drop files here
       </div>
-      <button className="upload-button" onClick={handleUpload}>
+      <Button colorScheme='blue' variant='solid'className="choose-file-button" onClick={handleChooseFile}>
+        Choose File
+      </Button>
+      
+      <Button colorScheme='green' variant='solid' className="upload-button" onClick={handleUpload}>
         Upload
-      </button>
+      </Button>
       <div className="selected-files">
         {selectedFiles.map((file, index) => (
           <div key={index}>{file.name}</div>
@@ -94,9 +95,9 @@ const Upload = ({ connectWallet }) => {
         {connectedWalletAddress ? (
           <p>Connected Wallet: {connectedWalletAddress}</p>
         ) : (
-          <button className="connect-wallet-button" onClick={handleWalletConnect}>
+          <Button colorScheme='teal' variant='solid' className="connect-wallet-button" onClick={handleWalletConnect}>
             Connect Wallet
-          </button>
+          </Button>
         )}
       </div>
 
