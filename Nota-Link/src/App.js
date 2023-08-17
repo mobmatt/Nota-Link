@@ -43,11 +43,11 @@ function App() {
           <Route path="/signup" element={<Signup />} />
         </Routes>
         </div>
-       
+        <Web3Modal projectId={projectId} ethereumClient={ethereumClient} />
       </div>
     </Router> 
     </WagmiConfig>
-    <Web3Modal projectId={projectId} ethereumClient={ethereumClient} />
+ 
   </ChakraProvider>
   
   );

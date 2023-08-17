@@ -1,6 +1,11 @@
 import React, { useState } from 'react';
 import { useToast, Button, Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, ModalFooter, useDisclosure } from '@chakra-ui/react';
 import '../styles/Upload.css';
+import axios from 'axios';
+
+
+
+
 
 const Upload = ({ Web3Button }) => {
   const [selectedFiles, setSelectedFiles] = useState([]);
@@ -25,24 +30,44 @@ const Upload = ({ Web3Button }) => {
   };
 
   const handleUpload = () => {
+    console.log('Modal should open');
     setIsSigning(true); // Show the "Sign" button when files are uploaded
     onOpen(); // Open the modal
   };
 
-  const handleSign = () => {
-    // Handle signing the files and showing a success message
-    setIsSigning(false); // Reset the signing state
-    toast({
-      title: 'Files signed and uploaded',
-      description: `${selectedFiles.length} files signed and uploaded successfully.`,
-      status: 'success',
-      duration: 3000,
-      isClosable: true,
+  const handleSign = async () => {
+    setIsSigning(false);
+  
+    const formData = new FormData();
+    selectedFiles.forEach(file => {
+      formData.append('file', file);
     });
-    setSelectedFiles([]);
-    onClose(); // Close the modal
-  };
+    try {
+      // Send files to server and get encryption key in response
+      const response = await axios.post('http://localhost:3000/upload', formData);
 
+      const { key: encryptionKey } = response.data;
+  
+      // Handle success message and update state
+      toast({
+        title: 'Files signed and uploaded',
+        description: `${selectedFiles.length} files signed and uploaded successfully.`,
+        status: 'success',
+        duration: 3000,
+        isClosable: true,
+      });
+  
+      // Save the encryption key to MongoDB
+      const saveKeyResponse = await axios.post('/save-key', { key: encryptionKey });
+      console.log('Encryption key saved:', saveKeyResponse.data);
+  
+      setSelectedFiles([]);
+      onClose(); // Close the modal
+    } catch (error) {
+      // Handle error
+      console.error('Error signing and uploading files:', error);
+    }
+  };
  
 
   return (
