@@ -92,11 +92,11 @@ const Upload = ({ Web3Button }) => {
       >
         Drag and drop files here
       </div>
-      <Button colorScheme='blue' variant='solid'className="choose-file-button" onClick={handleChooseFile}>
+      <Button colorScheme='blackAlpha' variant='solid'className="choose-file-button" onClick={handleChooseFile}>
         Choose File
       </Button>
       
-      <Button colorScheme='green' variant='solid' className="upload-button" onClick={handleUpload}>
+      <Button colorScheme='cyan' variant='solid' className="upload-button" onClick={handleUpload}>
         Upload
       </Button>
       <div className="selected-files">
