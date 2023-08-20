@@ -12,6 +12,9 @@ import {
 } from '@chakra-ui/react';
 import { Card, CardHeader, CardBody, Box, Heading, Text, Button } from '@chakra-ui/react';
 import '../styles/History.css'; 
+import '../components/SideBar';
+
+
 
 function History() {
 
@@ -32,7 +35,8 @@ function History() {
 
 
   return (
-    <div className='history-container'>
+    <div className='history-container' mt="100px"> 
+      
     <Card>
       <CardHeader>
         <Heading size='md'>History</Heading>
@@ -45,7 +49,7 @@ function History() {
             <Thead>
               <Tr>
                 <Th>File Name</Th>
-                <Th>Signature</Th>
+                <Th>Signatures</Th>
                 <Th isNumeric>Date</Th>
               </Tr>
             </Thead>

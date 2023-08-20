@@ -3,6 +3,7 @@ import { ChakraProvider } from '@chakra-ui/react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Home from './pages/Home';
 import Upload from './pages/Upload';
+import SideBar from './components/SideBar';
 import Navbar from './components/Navbar';
 import History from './pages/History';
 import Signup from './pages/signup';
@@ -39,7 +40,9 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/upload" element={<Upload Web3Button={Web3Button}/>} />
-          <Route path="/history" element={<History />} />
+          
+          <Route path="/history" element={<div><SideBar /><History /></div>} />
+          
           <Route path="/signup" element={<Signup />} />
         </Routes>
         </div>
