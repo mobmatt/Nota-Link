@@ -1,9 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { useToast, Button, Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, ModalFooter, useDisclosure } from '@chakra-ui/react';
 import '../styles/Upload.css';
-import axios from 'axios';
-
-
+import EthCrypto from 'eth-crypto';
 
 
 
@@ -44,11 +42,9 @@ const Upload = ({ Web3Button }) => {
       formData.append('file', file);
     });
     try {
-      // Send files to server and get encryption key in response
-      const response = await axios.post('http://localhost:3000/upload', formData);
+      
 
-      const { key: encryptionKey } = response.data;
-  
+      
       // Handle success message and update state
       toast({
         title: 'Files signed and uploaded',
@@ -58,10 +54,7 @@ const Upload = ({ Web3Button }) => {
         isClosable: true,
       });
   
-      // Save the encryption key to MongoDB
-      const saveKeyResponse = await axios.post('/save-key', { key: encryptionKey });
-      console.log('Encryption key saved:', saveKeyResponse.data);
-  
+      
       setSelectedFiles([]);
       onClose(); // Close the modal
     } catch (error) {
@@ -72,6 +65,14 @@ const Upload = ({ Web3Button }) => {
   const handleChooseFile = () => {
     fileInputRef.current.click(); // Trigger the click event on the file input element
   };
+
+  
+const identity = EthCrypto.createIdentity();
+> {
+   address: '',
+   privateKey: '',
+   publicKey: ''
+} 
 
   return (
     <div className="upload-container">
