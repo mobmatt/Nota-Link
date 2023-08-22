@@ -1,16 +1,40 @@
 import React, { useState, useRef } from 'react';
 import { useToast, Button, Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, ModalFooter, useDisclosure } from '@chakra-ui/react';
 import '../styles/Upload.css';
+import { Web3Modal } from '@web3modal/react';
+import { useWeb3Modal } from '@web3modal/react';
+import { create } from 'ipfs-http-client';
+import CryptoJS from 'crypto-js';
+import { useAccount } from 'wagmi';
+
+
+
+
+
 import EthCrypto from 'eth-crypto';
 
 
 
 const Upload = ({ Web3Button }) => {
+  const { address, isConnecting, isDisconnected } = useAccount()
   const [selectedFiles, setSelectedFiles] = useState([]);
+  const [publicKey, setPublicKey] = useState('');
   const [isSigning, setIsSigning] = useState(false); // State for showing the "Sign" button
   const toast = useToast();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const fileInputRef = useRef(null); 
+
+
+ 
+
+  const ipfs = create({
+    host: 'ipfs.infura.io',
+    port: '5001',
+    protocol: 'https',
+    headers: {
+      authorization: 'Basic ' + btoa('2U7lmm7vA3drtU7B5lgLM46BB2m:45da224ddbdf444a7ba88415425a28ce')
+    }
+  });
 
   const handleFileChange = (e) => {
     const files = Array.from(e.target.files);
@@ -29,50 +53,58 @@ const Upload = ({ Web3Button }) => {
   };
 
   const handleUpload = () => {
-    console.log('Modal should open');
     setIsSigning(true); // Show the "Sign" button when files are uploaded
     onOpen(); // Open the modal
   };
 
-  const handleSign = async () => {
-    setIsSigning(false);
-  
-    const formData = new FormData();
-    selectedFiles.forEach(file => {
-      formData.append('file', file);
-    });
-    try {
-      
 
-      
+
+  const handleSign =  async () => {
+
+    
+    
+    // Handle signing the files and showing a success message
+    setIsSigning(false); // Reset the signing state
+    try {
+      // Send files to server and get encryption key in response
+      const response = await axios.post('http://localhost:3000/upload', formData);
+
+      const { key: encryptionKey } = response.data;
+  
       // Handle success message and update state
       toast({
-        title: 'Files signed and uploaded',
-        description: `${selectedFiles.length} files signed and uploaded successfully.`,
+        title: 'CIDs encrypted and uploaded to IPFS',
+        description: `${uploadedFiles.length} CIDs encrypted and uploaded successfully.`,
         status: 'success',
         duration: 3000,
         isClosable: true,
       });
   
-      
+      // Save the encryption key to MongoDB
+      const saveKeyResponse = await axios.post('/save-key', { key: encryptionKey });
+      console.log('Encryption key saved:', saveKeyResponse.data);
+  
       setSelectedFiles([]);
       onClose(); // Close the modal
     } catch (error) {
-      // Handle error
-      console.error('Error signing and uploading files:', error);
+      console.error('Error uploading to IPFS:', error);
+      toast({
+        title: 'Error',
+        description: 'An error occurred while uploading files to IPFS.',
+        status: 'error',
+        duration: 3000,
+        isClosable: true,
+      });
     }
-  };
-  const handleChooseFile = () => {
-    fileInputRef.current.click(); // Trigger the click event on the file input element
-  };
+  }
+   
 
-  
-const identity = EthCrypto.createIdentity();
-> {
-   address: '',
-   privateKey: '',
-   publicKey: ''
-} 
+  const encryptString = (data, key) => {
+    const iv = CryptoJS.lib.WordArray.random(16); // Initialization vector for encryption
+    const encryptedData = CryptoJS.AES.encrypt(data, key, { iv });
+    return { encryptedData: encryptedData.toString(), iv: iv.toString() };
+  };
+ 
 
   return (
     <div className="upload-container">
@@ -108,6 +140,7 @@ const identity = EthCrypto.createIdentity();
       <div>
         <Web3Button />
       </div>
+      <div>{address}</div>
      
 
       {/* Modal */}
@@ -146,3 +179,4 @@ const identity = EthCrypto.createIdentity();
 };
 
 export default Upload;
+
