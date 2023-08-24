@@ -7,6 +7,7 @@ import SideBar from './components/SideBar';
 import Navbar from './components/Navbar';
 import History from './pages/History';
 import Signup from './pages/signup';
+
 import './styles/NavbarStyles.css'
 import { EthereumClient, w3mConnectors, w3mProvider } from '@web3modal/ethereum'
 import { Web3Modal } from '@web3modal/react'

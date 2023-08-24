@@ -1,42 +1,34 @@
 import React, { useState, useRef } from 'react';
-import { useToast, Button, Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, ModalFooter, useDisclosure } from '@chakra-ui/react';
-import '../styles/Upload.css';
-import { Web3Modal } from '@web3modal/react';
-import { useWeb3Modal } from '@web3modal/react';
-import { create } from 'ipfs-http-client';
-import CryptoJS from 'crypto-js';
+import {
+  useToast,
+  Button,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalCloseButton,
+  ModalBody,
+  ModalFooter,
+  useDisclosure,
+} from '@chakra-ui/react';
+import Web3 from 'web3';
 import { useAccount } from 'wagmi';
+import '../styles/Upload.css'
 
-
-
-
-
-import EthCrypto from 'eth-crypto';
 
 
 
 const Upload = ({ Web3Button }) => {
-  const { address, isConnecting, isDisconnected } = useAccount()
+  const { address } = useAccount();
   const [selectedFiles, setSelectedFiles] = useState([]);
-  const [publicKey, setPublicKey] = useState('');
-  const [isSigning, setIsSigning] = useState(false); // State for showing the "Sign" button
+  const [isSigning, setIsSigning] = useState(false);
+  const [publicKeyArmored, setPublicKeyArmored] = useState(''); // Store public key here
   const toast = useToast();
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const fileInputRef = useRef(null); 
-
-
- 
-
-  const ipfs = create({
-    host: 'ipfs.infura.io',
-    port: '5001',
-    protocol: 'https',
-    headers: {
-      authorization: 'Basic ' + btoa('2U7lmm7vA3drtU7B5lgLM46BB2m:45da224ddbdf444a7ba88415425a28ce')
-    }
-  });
+  const fileInputRef = useRef(null);
 
   const handleFileChange = (e) => {
+    console.log(e);
     const files = Array.from(e.target.files);
     setSelectedFiles(files);
   };
@@ -45,91 +37,90 @@ const Upload = ({ Web3Button }) => {
     e.preventDefault();
     const files = Array.from(e.dataTransfer.files);
     setSelectedFiles(files);
-    setIsSigning(true); // Show the "Sign" button when files are dropped
+    setIsSigning(true);
   };
 
   const handleDragOver = (e) => {
     e.preventDefault();
   };
 
-  const handleUpload = () => {
-    setIsSigning(true); // Show the "Sign" button when files are uploaded
-    onOpen(); // Open the modal
+  const handleSign = () => {
+    setIsSigning(false);
   };
 
+  const handleUpload = async () => {
+    setIsSigning(true);
+    onOpen();
+
+    const forge = require('node-forge');
+const pki = forge.pki; // For working with public key infrastructure (asymmetric encryption)
+const util = forge.util; // For working with encoding and decoding data
 
 
-  const handleSign =  async () => {
-
-    
-    
-    // Handle signing the files and showing a success message
-    setIsSigning(false); // Reset the signing state
     try {
-      // Send files to server and get encryption key in response
-      const response = await axios.post('http://localhost:3000/upload', formData);
+      for (const file of selectedFiles) {
+        const reader = new FileReader();
+        reader.onload = async (event) => {
+          const fileContent = event.target.result;
+  
+          // Generate an RSA key pair
+          const rsaKeyPair = forge.pki.rsa.generateKeyPair({ bits: 1024 });
+          const publicKey = forge.pki.publicKeyToPem(rsaKeyPair.publicKey);
+  
+          // Encrypt the file content using the public key
+          const encryptedData = rsaKeyPair.publicKey.encrypt(forge.util.encodeUtf8(fileContent), 'RSA-OAEP', {
+            md: forge.md.sha256.create(),
+          });
+  
+          console.log('Original data:', fileContent);
+          console.log('Encrypted data:', encryptedData);
 
-      const { key: encryptionKey } = response.data;
-  
-      // Handle success message and update state
-      toast({
-        title: 'CIDs encrypted and uploaded to IPFS',
-        description: `${uploadedFiles.length} CIDs encrypted and uploaded successfully.`,
-        status: 'success',
-        duration: 3000,
-        isClosable: true,
-      });
-  
-      // Save the encryption key to MongoDB
-      const saveKeyResponse = await axios.post('/save-key', { key: encryptionKey });
-      console.log('Encryption key saved:', saveKeyResponse.data);
-  
+          // Here would be the IPFS upload logic
+          // ...
+
+          toast({
+            title: 'File encrypted and uploaded to IPFS',
+            description: `File ${file.name} encrypted and uploaded successfully.`,
+            status: 'success',
+            duration: 3000,
+            isClosable: true,
+          });
+        };
+        reader.readAsArrayBuffer(file);
+      }
       setSelectedFiles([]);
-      onClose(); // Close the modal
+      onClose();
     } catch (error) {
-      console.error('Error uploading to IPFS:', error);
+      console.error('Error encrypting and uploading to IPFS:', error);
       toast({
         title: 'Error',
-        description: 'An error occurred while uploading files to IPFS.',
+        description: 'An error occurred while encrypting and uploading files to IPFS.',
         status: 'error',
         duration: 3000,
         isClosable: true,
       });
     }
-  }
-   
-
-  const encryptString = (data, key) => {
-    const iv = CryptoJS.lib.WordArray.random(16); // Initialization vector for encryption
-    const encryptedData = CryptoJS.AES.encrypt(data, key, { iv });
-    return { encryptedData: encryptedData.toString(), iv: iv.toString() };
   };
- 
 
   return (
     <div className="upload-container">
       <input
-     className="file-input"
-     ref={fileInputRef} // Assign the ref to the file input
-     type="file"
-     style={{ display: 'none' }}
-     multiple
-     onChange={handleFileChange}
+        className="file-input"
+        ref={fileInputRef}
+        type="file"
+        style={{ display: 'none' }}
+        multiple
+        onChange={handleFileChange}
       />
 
-
-      <div
-        className="drop-area"
-        onDrop={handleDrop}
-        onDragOver={handleDragOver}
-      >
+      <div className="drop-area" onDrop={handleDrop} onDragOver={handleDragOver}>
         Drag and drop files here
       </div>
-      <Button colorScheme='blackAlpha' variant='solid'className="choose-file-button" onClick={handleChooseFile}>
+      <Button colorScheme="blackAlpha" variant="solid" className="choose-file-button" onClick={handleFileChange}>
         Choose File
       </Button>
-      
-      <Button colorScheme='cyan' variant='solid' className="upload-button" onClick={handleUpload}>
+
+      <Button colorScheme="cyan" variant="solid" className="upload-button" onClick={handleUpload}>
         Upload
       </Button>
       <div className="selected-files">
@@ -141,7 +132,6 @@ const Upload = ({ Web3Button }) => {
         <Web3Button />
       </div>
       <div>{address}</div>
-     
 
       {/* Modal */}
       <Modal isOpen={isOpen} onClose={onClose}>
@@ -179,4 +169,3 @@ const Upload = ({ Web3Button }) => {
 };
 
 export default Upload;
-
